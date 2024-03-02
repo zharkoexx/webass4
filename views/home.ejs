@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Home</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/2aba850fd9.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"> </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</head>
+<body class="bg-blue">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/">Home</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/login">Log In</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/dashboard">Dashboard</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item m-2">
+                    <a href="/change-language?lng=en">en</a>
+                </li>
+                <li class="nav-item m-2">
+                    <a href="/change-language?lng=ru">ru</a>
+                </li>
+            </ul>
+        </div>
+        </div>
+      </nav>
+
+    <div class="container">
+        <!-- Main content area where alerts will be inserted before -->
+        <div class="main pt-5">
+            <div class="row">
+                <div class="col-8">
+                    <div class="col-10">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Gmail</th>
+                                    <th>Role</th>
+                                    <th>Photos</th>
+
+                                </tr>
+                            </thead>
+                            <tbody class="user-list">
+                                <% users.forEach(user => { %>
+                                    <tr>
+                                        <td><%= user.username %></td>
+                                        <td><%= user.gmail %></td>
+                                        <td><%= user.role %></td>
+                                        <td id="photo"></td>
+                                    </tr>
+                                <% }); %>
+                                <!-- More rows as needed -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>    
+                <div class="col-2 bg-text-light">
+                    <div class="container my-3 p-3 border border-2 text-center">
+                        <button onclick="getRandomJoke()" class="btn btn-primary mt-2">Random quote</button>
+                        <div id="jokes-container" class="p-2">
+                            <!-- Jokes will be displayed here -->
+                        </div>
+                    </div>
+                    <div class="container my-3 p-3 border border-2 text-center">
+                        <button type="button" class="btn btn-primary" onclick="getTodayInHistory()">
+                            Today in History
+                        </button>
+                        <div id="historyContainer" class="img-fluid d-flex justify-content-center">
+                            <!-- Today's historical events will be displayed here -->
+                        </div>
+                    </div>                    
+                    <div class="container my-3 p-3 border border-2 text-center">
+                        <button type="button" class="btn btn-primary" onclick="fun()">
+                            Random Picture
+                        </button>
+                        <div id="funFactInfo">
+                            <!-- Fun facts will be displayed here -->
+                        </div>
+                    </div>
+                </div> 
+                <div class="container my-3 p-3 border border-2 text-center">
+                    <h2>Send an Email</h2>
+                    <form id="emailForm">
+                        <input type="email" id="emailTo" placeholder="Recipient Email" required style="font-size: 1.25rem; padding: 10px 20px; width: 80%; display: block; margin-bottom: 15px;">
+                        <input type="text" id="emailSubject" placeholder="Subject" required style="font-size: 1.25rem; padding: 10px 20px; width: 80%; display: block; margin-bottom: 15px;">
+                        <textarea id="emailText" placeholder="Your message" required style="font-size: 1.25rem; padding: 10px 20px; width: 80%; height: 100px; display: block; margin-bottom: 15px;"></textarea>
+                        <br> <!-- Разрыв строки перед кнопкой -->
+                        <button type="submit" class="btn btn-primary" style="font-size: 1.25rem; padding: 10px 20px;">Send Email</button>
+                    </form>
+                    <div id="emailResponse"></div>
+                </div>
+                
+                
+                
+                        
+                </div>
+            </div>
+        </div>    
+    </div>
+    <footer class="mt-auto bg-very-dark text-dark fw-bold text-center py-3">
+        <div class="container">
+          Zhakuda Zharkynai SE-2212
+        </div>
+    </footer>
+    
+      
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+    <script src="/js/main.js"></script>
+    <script>
+        document.getElementById('emailForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+    
+            const to = document.getElementById('emailTo').value;
+            const subject = document.getElementById('emailSubject').value;
+            const text = document.getElementById('emailText').value;
+    
+            fetch('/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ to, subject, text }),
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('emailResponse').textContent = data;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+    
+
+</body>
+</html>
